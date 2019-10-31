@@ -18,20 +18,24 @@ def startup(game_state):
     print(f"Successfully Connected to {user_input_host} at port {user_input_port}")
 
     first_line = 'I32CFSP_HELLO boo'
-    game_connection.output.write(first_line + '\r\n')
-    game_connection.output.flush()
+    write_and_flush(first_line, game_connection)
     print(game_connection.input.readline())
 
     second_line = 'AI_GAME'
-    game_connection.output.write(second_line + '\r\n')
-    game_connection.output.flush()
+    write_and_flush(second_line, game_connection)
     print(game_connection.input.readline())
 
 
     #Code to run the game and search for exceptions
+
     
     gameplay(game_state, game_connection)
     socket_handling.close(game_connection)
+
+def write_and_flush(_input, game_connection) -> None:
+    game_connection.output.write(_input + '\r\n')
+    game_connection.output.flush()
+    
 
 
 
@@ -43,8 +47,7 @@ def user_input(game_state, game_connection) -> 'game_state':
     user_input = local_connect_four.user_input(game_state)
     game_state = local_connect_four.drop_or_pop_action(game_state, user_input)
 
-    game_connection.output.write(user_input +'\r\n')
-    game_connection.output.flush()
+    write_and_flush(user_input, game_connection)
 
     return game_state
 
