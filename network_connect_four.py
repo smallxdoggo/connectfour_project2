@@ -7,8 +7,11 @@ COLOR = {connectfour.RED:'Red', connectfour.YELLOW:'Yellow'}
 
 
 
-def startup(game_state):
+def startup() -> ('game_state', 'game_connection'):
+    '''Startup game by connection to host and port. Handle username input. Return the initial game_state and game_connection.'''
 
+    game_state = connectfour.new_game()
+    
     user_input_host = 'circinus-32.ics.uci.edu' #change back to 'input('What is the host name: ')'
     user_input_port = 4444 # change back to int(input('What is the port number'))
     print("Connecting...")
@@ -25,20 +28,13 @@ def startup(game_state):
     write_and_flush(second_line, game_connection)
     print(game_connection.input.readline())
 
-
-    #Code to run the game and search for exceptions
-
+    return game_state, game_connection
     
-    gameplay(game_state, game_connection)
-    socket_handling.close(game_connection)
 
 def write_and_flush(_input, game_connection) -> None:
     game_connection.output.write(_input + '\r\n')
     game_connection.output.flush()
     
-
-
-
 
 
 def user_input(game_state, game_connection) -> 'game_state':
@@ -59,6 +55,7 @@ def server_input(game_state, game_connection) -> 'game_state':
     print(game_connection.input.readline())
 
     return game_state
+
 
 def gameplay(game_state, game_connection) -> None:
     '''Main gameplay funtion. Ends the game/breaks out of loop if an error is found. '''
@@ -92,11 +89,14 @@ def gameplay(game_state, game_connection) -> None:
             local_connect_four.print_board(game_state)
             local_connect_four.who_won(game_state)
             break
+
+    socket_handling.close(game_connection)
+        
              
 
          
 
-if __name__ == '__main__':
-    game_state = connectfour.new_game()
-    startup(game_state)
+if __name__ == '__main__':   
+    startup = startup()
+    gameplay(startup[0], startup[1])
 
