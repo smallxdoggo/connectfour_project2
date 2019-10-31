@@ -29,8 +29,8 @@ def startup(game_state):
 
 
     #Code to run the game and search for exceptions
-    #gameplay(game_state,game_connection)
-    gametest(game_state, game_connection)
+    
+    gameplay(game_state, game_connection)
     socket_handling.close(game_connection)
 
 def user_input_with_ai(game_state,game_connection):
@@ -82,7 +82,7 @@ def server_input(game_state, game_connection):
 
     return game_state
 
-def gametest(game_state, game_connection):
+def gameplay(game_state, game_connection):
     while True:
         try:
             if game_state.turn == connectfour.RED:
@@ -107,11 +107,17 @@ def gametest(game_state, game_connection):
         except AttributeError:
             print('Game has ended with no winner')
             break
+
+        if connectfour.winner(game_state)==connectfour.RED or connectfour.winner(game_state) == connectfour.YELLOW:
+            local_connect_four.print_board(game_state)
+            local_connect_four.who_won(game_state)
+            
+            break
              
 
          
 
-def gameplay(game_state,game_connection):
+def gametest(game_state,game_connection):
 
     game_on = True
     no_winner = True
