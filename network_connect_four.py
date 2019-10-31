@@ -1,9 +1,7 @@
 import connectfour
 import local_connect_four
 import socket_handling
-
-COLOR = {connectfour.RED:'Red', connectfour.YELLOW:'Yellow'}
-
+import shared_functions
 
 
 
@@ -40,7 +38,7 @@ def write_and_flush(_input, game_connection) -> None:
 def user_input(game_state, game_connection) -> 'game_state':
     '''Takes user input and updates the game_state. Then sends the input to connected server. Returns the game_state.'''
     
-    user_input = local_connect_four.user_input(game_state)
+    user_input = shared_functions.user_input(game_state)
     game_state = local_connect_four.drop_or_pop_action(game_state, user_input)
 
     write_and_flush(user_input, game_connection)
@@ -63,10 +61,10 @@ def gameplay(game_state, game_connection) -> None:
     while True:
         try:
             if game_state.turn == connectfour.RED:
-                local_connect_four.print_board(game_state)
+                shared_functions.print_board(game_state)
                 game_state = user_input(game_state, game_connection)
             elif game_state.turn == connectfour.YELLOW: 
-                local_connect_four.print_board(game_state)
+                shared_functions.print_board(game_state)
                 game_state = server_input(game_state, game_connection)
 
         except IndexError:   
