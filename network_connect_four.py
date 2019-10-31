@@ -67,13 +67,20 @@ def user_input_with_ai(game_state,game_connection):
 
 def user_input(game_state, game_connection):
     user_input = local_connect_four.user_input(game_state)
-    local_connect_four.drop_or_pop_action(game_state, user_input)
+    game_state = local_connect_four.drop_or_pop_action(game_state, user_input)
 
     game_connection.output.write(user_input +'\r\n')
     game_connection.output.flush()
 
-    return local_connect_four.drop_or_pop_action(game_state, user_input)
-    
+    return game_state
+
+
+def server_input(game_state, game_connection):
+    print(game_connection.input.readline())
+    game_state = local_connect_four.drop_or_pop_action(game_state, game_connection.input.readline())
+    print(game_connection.input.readline())
+
+    return game_state
 
 def gametest(game_state, game_connection):
     while True:
@@ -83,9 +90,7 @@ def gametest(game_state, game_connection):
                 game_state = user_input(game_state, game_connection)
             elif game_state.turn == connectfour.YELLOW: 
                 local_connect_four.print_board(game_state)
-                print(game_connection.input.readline())
-                game_state = local_connect_four.drop_or_pop_action(game_state, game_connection.input.readline())
-                print(game_connection.input.readline())
+                game_state = server_input(game_state, game_connection)
 
         except IndexError:   
             print('Game has ended with no winner')
