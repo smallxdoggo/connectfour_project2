@@ -1,5 +1,4 @@
 import connectfour
-import local_connect_four
 import socket_handling
 import shared_functions
 
@@ -39,7 +38,7 @@ def user_input(game_state, game_connection) -> 'game_state':
     '''Takes user input and updates the game_state. Then sends the input to connected server. Returns the game_state.'''
     
     user_input = shared_functions.user_input(game_state)
-    game_state = local_connect_four.drop_or_pop_action(game_state, user_input)
+    game_state = shared_functions.drop_or_pop_action(game_state, user_input)
 
     write_and_flush(user_input, game_connection)
 
@@ -49,7 +48,7 @@ def user_input(game_state, game_connection) -> 'game_state':
 def server_input(game_state, game_connection) -> 'game_state':
     '''Reads input from the server, and updates game_state based on what is read. Returns the game_state.'''
     print(game_connection.input.readline())
-    game_state = local_connect_four.drop_or_pop_action(game_state, game_connection.input.readline())
+    game_state = shared_functions.drop_or_pop_action(game_state, game_connection.input.readline())
     print(game_connection.input.readline())
 
     return game_state
@@ -84,8 +83,8 @@ def gameplay(game_state, game_connection) -> None:
             break
 
         if connectfour.winner(game_state)==connectfour.RED or connectfour.winner(game_state) == connectfour.YELLOW:
-            local_connect_four.print_board(game_state)
-            local_connect_four.who_won(game_state)
+            shared_functions.print_board(game_state)
+            shared_functions.who_won(game_state)
             break
 
     socket_handling.close(game_connection)
