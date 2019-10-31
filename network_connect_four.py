@@ -29,8 +29,8 @@ def startup(game_state):
 
 
     #Code to run the game and search for exceptions
-    gameplay(game_state,game_connection)
-
+    #gameplay(game_state,game_connection)
+    gametest(game_state, game_connection)
     socket_handling.close(game_connection)
 
 def user_input_with_ai(game_state,game_connection):
@@ -65,6 +65,46 @@ def user_input_with_ai(game_state,game_connection):
 
     return local_connect_four.drop_or_pop_action(game_state, user_type_input)
 
+def user_input(game_state, game_connection):
+    user_input = local_connect_four.user_input(game_state)
+    local_connect_four.drop_or_pop_action(game_state, user_input)
+
+    game_connection.output.write(user_input +'\r\n')
+    game_connection.output.flush()
+
+    return local_connect_four.drop_or_pop_action(game_state, user_input)
+    
+
+def gametest(game_state, game_connection):
+    while True:
+        try:
+            if game_state.turn == connectfour.RED:
+                local_connect_four.print_board(game_state)
+                game_state = user_input(game_state, game_connection)
+            elif game_state.turn == connectfour.YELLOW: 
+                local_connect_four.print_board(game_state)
+                print(game_connection.input.readline())
+                game_state = local_connect_four.drop_or_pop_action(game_state, game_connection.input.readline())
+                print(game_connection.input.readline())
+
+        except IndexError:   
+            print('Game has ended with no winner')
+            break
+        except connectfour.InvalidMoveError:
+            print('Game has ended with no winner')
+            break
+        except connectfour.GameOverError:
+            print("Game is already over")
+            break
+        except ValueError:
+            print('Game has ended with no winner')
+            break
+        except AttributeError:
+            print('Game has ended with no winner')
+            break
+             
+
+         
 
 def gameplay(game_state,game_connection):
 
@@ -77,12 +117,7 @@ def gameplay(game_state,game_connection):
                 local_connect_four.print_board(game_state)
                 game_state = user_input_with_ai(game_state,game_connection)
 
-            elif connectfour.winner(game_state)==connectfour.RED or connectfour.winner(game_state) == connectfour.YELLOW:
-
-                local_connect_four.who_won(game_state)
-                no_winner = False
-                game_on = False
-                break
+            
 
             elif game_state.turn == connectfour.YELLOW:
                 try:
@@ -109,13 +144,21 @@ def gameplay(game_state,game_connection):
                     no_winner = False
                     game_on = False
                     print('Game ended with no winner')
+
+                    
                 if connectfour.winner(game_state)==connectfour.RED or connectfour.winner(game_state) == connectfour.YELLOW:
 
                     local_connect_four.who_won(game_state)
                     no_winner = False
                     game_on = False
                     break
+                
+            elif connectfour.winner(game_state)==connectfour.RED or connectfour.winner(game_state) == connectfour.YELLOW:
 
+                local_connect_four.who_won(game_state)
+                no_winner = False
+                game_on = False
+                break
 
 if __name__ == '__main__':
     game_state = connectfour.new_game()
